@@ -1,58 +1,68 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public Rigidbody rb;
-    public float jumpForce = 6f;
-    public float speed = 5f;
-    public float Jump;
-    public float jumpHeight = 2f;
-    public bool isGrounded = false;
-    public LayerMask TerrainLayers;
+    [Header("Movement")]
+    public float moveSpeed;
 
-    private Collider PlayerCollider;
+    public float groundDrag;
 
-    private void OnCollisionEnter(Collision collision)
+    [Header("Ground Check")]
+    public float playerHeight;
+    public LayerMask whatIsGround;
+    bool grounded;
+
+    public Transform orientation;
+
+    float horizontalInput;
+    float verticualInput;
+
+    Vector3 moveDirection;
+
+    Rigidbody rb;
+
+    private void Start()
     {
-        if (collision.collider.CompareTag("Terrain"))
-        {
-            isGrounded = true;
-        }
-    }
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
         rb = GetComponent<Rigidbody>();
+        rb. freezeRotation = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (Input.GetKey("w"))
-        {
-            transform.Translate(Vector3.forward * speed * Time.deltaTime);
-        }
-        if (Input.GetKey("s"))
-        {
-            transform.Translate(Vector3.back * speed * Time.deltaTime);
-        }
-        if (Input.GetKey("a"))
-        {
-            transform.Translate(Vector3.left * speed * Time.deltaTime);
-        }
-        if (Input.GetKey("d"))
-        {
-            transform.Translate(Vector3.right * speed * Time.deltaTime);
-        }
-        if (Input.GetAxis("Jump") != 0 && isGrounded) 
-        {
-            Jump = Input.GetAxis("Jump") * jumpForce;
-            rb.AddForce(new Vector3(0, Jump, 0), ForceMode.Impulse);
-            isGrounded = false;
-        }
+        //Ground check
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+
+        MyInput();
+
+        // handle drag
+        if (grounded)
+            rb.linearDamping = groundDrag;
+        else 
+            rb .angularDamping = moveSpeed;
+    }
+
+    private void FixedUpdate()
+    {
+        MovePlayer();
+    }
+
+    private void MyInput()
+    {
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticualInput = Input.GetAxis("Vertical");
+    }
+
+    private void MovePlayer()
+    {
+        moveDirection = orientation.forward * verticualInput + orientation.right * horizontalInput;
         
+        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+    }
+
+    private void SpeedControl()
+    {
+        Vector3 flatVel = new Vector3(rb.linearVelocity);
     }
 }
