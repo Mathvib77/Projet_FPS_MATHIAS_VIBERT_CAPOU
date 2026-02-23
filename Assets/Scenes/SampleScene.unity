@@ -470,10 +470,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 16
-  groundDrag: 3
+  groundDrag: 3.5
   jumpForce: 10
   jumpCooldown: 1
-  airMultiplier: 7
+  airMultiplier: 8
   jumpkey: 32
   playerHeight: 2
   whatIsGround:
