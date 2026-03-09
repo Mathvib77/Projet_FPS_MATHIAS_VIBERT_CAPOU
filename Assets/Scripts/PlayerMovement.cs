@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Keybinds")]
     public KeyCode jumpkey=KeyCode.Space;
-    public KeyCode sprintKey = KeyCode.LeftShift;
+    public KeyCode sprintKey = KeyCode.LeftControl;
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -88,9 +88,11 @@ public class PlayerMovement : MonoBehaviour
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
 
+        
         //when to jump
         if(Input.GetKey(jumpkey) && readyToJump && grounded)
         {
+            
             readyToJump = false;
 
             Jump();
@@ -148,11 +150,11 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
 
         //in air
-        else if(!grounded)
+        else 
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
 
         //turn gravity off while on slope
-        rb.useGravity = !OnSlope();
+        if(!wallrunning) rb.useGravity = !OnSlope();
     }
 
     private void SpeedControl()
